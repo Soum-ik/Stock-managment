@@ -22,6 +22,13 @@ export async function POST() {
     price: 500000,
     company: "samsung",
     category: "primium phone",
+  },
+  {
+    name: "apple 12pro",
+    color: "blue",
+    price: 100000,
+    company: "apple",
+    category: "gold edition",
   });
   const result = await product.save();
   return NextResponse.json({ result, success: true });
