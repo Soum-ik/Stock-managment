@@ -8,7 +8,7 @@ export async function GET() {
     await mongoose.connect(process.env.conestionSTR);
     const data = await Product.find();
     console.log("SuccessFully connected", data);
-    return NextResponse.json({ result: data });
+    return NextResponse.json({ result: data, success: true });
   } catch (error) {
     console.log("connection error! data not found", data);
     return NextResponse.json({ result: data });
@@ -16,20 +16,7 @@ export async function GET() {
 }
 export async function POST() {
   await mongoose.connect(process.env.conestionSTR);
-  let product = new Product({
-    name: "Note 10+",
-    color: "black",
-    price: 500000,
-    company: "samsung",
-    category: "primium phone",
-  },
-  {
-    name: "apple 12pro",
-    color: "blue",
-    price: 100000,
-    company: "apple",
-    category: "gold edition",
-  });
+  let product = new Product();
   const result = await product.save();
   return NextResponse.json({ result, success: true });
 }
