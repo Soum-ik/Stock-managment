@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/components/Header";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const [productForm, setProductForm] = useState({});
@@ -20,9 +20,8 @@ export default function Home() {
 
       if (response.ok) {
         console.log("Your Product has been added!");
-        setProductForm({ slug: "", quantity: "", price: "" }); // Reset the form fields
+        setProductForm({ slug: "", quantity: "", price: "" });
       } else {
-        // Handle error case
         console.error("Error adding product");
       }
     } catch (error) {
