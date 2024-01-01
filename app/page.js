@@ -41,7 +41,7 @@ export default function Home() {
       <Header />
 
       {/* Display Current Stock  */}
-      <div className="container mx-auto my-8">
+      <div className="container mx-auto my-8 sm:px-15 px-10">
         <h1 className="text-3xl font-semibold mb-6">Add a Product</h1>
 
         <form>
