@@ -2,13 +2,12 @@
 
 import React, { useState } from "react";
 
-const AddProduct = () => {
+export const AddProduct = () => {
   const [productForm, setProductForm] = useState({
     name: "",
     quantity: "",
     price: "",
   });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProductForm((prevForm) => ({
@@ -16,29 +15,26 @@ const AddProduct = () => {
       [name]: value,
     }));
   };
-
-  const addProduct = (e) => {
+  const addProduct = async (e) => {
     e.preventDefault();
-    // Your logic to add the product goes here
-    console.log("Adding Product:", productForm);
-
-    // Reload the page
-    window.location.reload();
+    let result = await fetch("http://localhost:3000/api/products", {
+      method: "POST",
+      body: JSON.stringify(productForm.name, productForm.price, productForm.quantity),
+    result = 
+    });
   };
 
   return (
     <div className="container mx-auto my-8 sm:px-15 px-10">
       <h1 className="text-3xl font-semibold mb-6">Add a Product</h1>
 
-      <form
-        onSubmit={addProduct}
-        onClick={(e) => e.preventDefault()}
-        className=" space-y-10"
-      >
+      <form onSubmit={addProduct} className="space-y-10">
+        {/* Your input fields go here */}
         <input
           value={productForm.name}
           name="name"
           onChange={handleChange}
+          placeholder="add your product name"
           type="text"
           id="name"
           className="w-full border border-gray-300 px-4 py-2 "
@@ -47,18 +43,21 @@ const AddProduct = () => {
           value={productForm.price}
           name="price"
           onChange={handleChange}
-          type="number"
-          id="price"
-          className="w-full border border-gray-300 px-4 py-2"
+          type="text"
+          placeholder="price"
+          id="name"
+          className="w-full border border-gray-300 px-4 py-2 "
         />
         <input
           value={productForm.quantity}
           name="quantity"
+          placeholder="quantity "
           onChange={handleChange}
-          type="number"
-          id="quantity"
-          className="w-full border border-gray-300 px-4 py-2"
+          type="text"
+          id="name"
+          className="w-full border border-gray-300 px-4 py-2 "
         />
+        {/* ... other input fields ... */}
 
         <button
           type="submit"
@@ -67,8 +66,18 @@ const AddProduct = () => {
           Add Product
         </button>
       </form>
+
+      {/* Display the submitted data */}
+      {submittedData && (
+        <div>
+          <h1>Display data</h1>
+          <ol>
+            <li>Name: {submittedData.name}</li>
+            <li>Price: {submittedData.price}</li>
+            <li>Quantity: {submittedData.quantity}</li>
+          </ol>
+        </div>
+      )}
     </div>
   );
 };
-
-export default AddProduct;

@@ -14,9 +14,10 @@ export async function GET() {
     return NextResponse.json({ result: data });
   }
 }
-export async function POST() {
+export async function POST(request) {
+  const payload = await request.json();
   await mongoose.connect(process.env.conestionSTR);
   let product = new Product();
-  const result = await product.save();
+  const result = await product.save(payload);
   return NextResponse.json({ result, success: true });
 }
