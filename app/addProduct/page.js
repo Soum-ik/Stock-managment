@@ -1,27 +1,29 @@
 "use client";
-
 import React, { useState } from "react";
 
-export const AddProduct = () => {
-  const [productForm, setProductForm] = useState({
-    name: "",
-    quantity: "",
-    price: "",
-  });
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
-  };
+export default function AddProduct() {
+  const [name, setName] = useState("Name");
+  const [price, setPrice] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+
   const addProduct = async (e) => {
     e.preventDefault();
+
     let result = await fetch("http://localhost:3000/api/products", {
       method: "POST",
-      body: JSON.stringify(productForm.name, productForm.price, productForm.quantity),
-    result = 
+      body: JSON.stringify({
+        name,
+        price,
+        quantity,
+      }),
     });
+
+    console.log(result);
+    if (result.status === 200) {
+      alert("Your product successfully added");
+    } else {
+      alert("Failed to add product. Please try again.");
+    }
   };
 
   return (
@@ -29,55 +31,41 @@ export const AddProduct = () => {
       <h1 className="text-3xl font-semibold mb-6">Add a Product</h1>
 
       <form onSubmit={addProduct} className="space-y-10">
-        {/* Your input fields go here */}
         <input
-          value={productForm.name}
+          value={name}
           name="name"
-          onChange={handleChange}
+          onChange={(e) => setName(e.target.value)}
           placeholder="add your product name"
           type="text"
           id="name"
           className="w-full border border-gray-300 px-4 py-2 "
         />
         <input
-          value={productForm.price}
+          value={price}
           name="price"
-          onChange={handleChange}
-          type="text"
+          onChange={(e) => setPrice(e.target.value)}
+          type="number"
           placeholder="price"
           id="name"
           className="w-full border border-gray-300 px-4 py-2 "
         />
         <input
-          value={productForm.quantity}
+          value={quantity}
           name="quantity"
-          placeholder="quantity "
-          onChange={handleChange}
+          placeholder="quantity"
+          onChange={(e) => setQuantity(e.target.value)}
           type="text"
           id="name"
           className="w-full border border-gray-300 px-4 py-2 "
         />
-        {/* ... other input fields ... */}
 
         <button
           type="submit"
           className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold"
         >
-          Add Product
+          {"add product"}
         </button>
       </form>
-
-      {/* Display the submitted data */}
-      {submittedData && (
-        <div>
-          <h1>Display data</h1>
-          <ol>
-            <li>Name: {submittedData.name}</li>
-            <li>Price: {submittedData.price}</li>
-            <li>Quantity: {submittedData.quantity}</li>
-          </ol>
-        </div>
-      )}
     </div>
   );
-};
+}

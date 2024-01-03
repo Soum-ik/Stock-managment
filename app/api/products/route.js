@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 export async function GET() {
   let data = [];
   try {
-    await mongoose.connect(process.env.conestionSTR);
     const data = await Product.find();
     console.log("SuccessFully connected", data);
     return NextResponse.json({ result: data, success: true });
@@ -14,10 +13,12 @@ export async function GET() {
     return NextResponse.json({ result: data });
   }
 }
+
 export async function POST(request) {
-  const payload = await request.json();
-  await mongoose.connect(process.env.conestionSTR);
-  let product = new Product();
-  const result = await product.save(payload);
+  const body = await request.json();
+  console.log(body);
+  let product = new Product(body);
+
+  const result = await product.save();
   return NextResponse.json({ result, success: true });
 }
