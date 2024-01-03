@@ -1,14 +1,15 @@
-"use client";
+"use client"; 
 import React, { useState } from "react";
 
 export default function AddProduct() {
   const [name, setName] = useState("Name");
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const addProduct = async (e) => {
     e.preventDefault();
-
+    setLoading(true)
     let result = await fetch("http://localhost:3000/api/products", {
       method: "POST",
       body: JSON.stringify({
@@ -21,8 +22,10 @@ export default function AddProduct() {
     console.log(result);
     if (result.status === 200) {
       alert("Your product successfully added");
+      setLoading(false)
     } else {
       alert("Failed to add product. Please try again.");
+      setLoading(true)
     }
   };
 
@@ -63,7 +66,7 @@ export default function AddProduct() {
           type="submit"
           className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold"
         >
-          {"add product"}
+          {loading ? "add product" : "adding"}
         </button>
       </form>
     </div>
