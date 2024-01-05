@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 
 const Page = () => {
@@ -9,27 +8,10 @@ const Page = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/products", {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          console.error(
-            "Failed to fetch data:",
-            response.status,
-            response.statusText
-          );
-          return;
-        }
-
-        let rjson = await response.json();
-        setProducts(rjson.products);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      const response = await fetch("http://localhost:3000/api/products");
+      let data = await response.json();
+      setProducts(data.result);
     };
-
     fetchProducts();
   }, []);
 
@@ -76,7 +58,7 @@ const Page = () => {
           className="w-full border border-gray-300 px-4 py-2 mb-6"
         />
       </div>
-
+      
       {/* Main content container */}
       <div className="container mx-auto my-5 sm:px-15 px-10">
         {/* Add product header */}
@@ -144,20 +126,19 @@ const Page = () => {
             </tr>
           </thead>
           <tbody>
-            {products &&
-              products.map((product) => (
-                <tr className=" text-center" key={product}>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {product.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {product.price}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {product.quantity}
-                  </td>
-                </tr>
-              ))}
+            {products?.map((product) => (
+              <tr className=" text-center" key={product}>
+                <td className="border border-gray-300 px-4 py-2">
+                  {product.name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {product.price}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {product.quantity}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
