@@ -1,15 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Page = () => {
-  const [name, setName] = useState(undefined);
-  const [price, setPrice] = useState(undefined);
-  const [quantity, setQuantity] = useState(undefined);
+  const [productForm, setProductForm] = useState({});
   const [loading, setLaoding] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/products", {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          console.error(
+            "Failed to fetch data:",
+            response.status,
+            response.statusText
+          );
+          return;
+        }
+
+        let rjson = await response.json();
+        setProducts(rjson.products);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const addProduct = async (e) => {
-    if (!name || !price || !quantity) {
+    if (!productForm) {
       alert("Please fill in all the fields");
       return;
     }
@@ -21,17 +46,11 @@ const Page = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          price,
-          quantity,
-        }),
+        body: JSON.stringify(productForm),
       });
 
       if (response.ok || response.status === 200) {
-        setName("");
-        setPrice("");
-        setQuantity("");
+        setProductForm({});
         alert("Your product was successfully added");
         setLaoding(false);
       } else {
@@ -43,9 +62,13 @@ const Page = () => {
     }
   };
 
+  const handleChange = (e) => {
+    setProductForm({ ...productForm, [e.target.name]: e.target.value });
+  };
+
   return (
     <>
-      <div className="container mx-auto my-8 sm:px-15 px-10">
+      <div className="container mx-auto my-5 sm:px-15 px-10">
         <h1 className="text-3xl font-semibold mb-6">Search</h1>
         <input
           type="text"
@@ -55,40 +78,43 @@ const Page = () => {
       </div>
 
       {/* Main content container */}
-      <div className="container mx-auto my-8 sm:px-15 px-10">
+      <div className="container mx-auto my-5 sm:px-15 px-10">
         {/* Add product header */}
         <h1 className="text-3xl font-semibold mb-6">Add a Product</h1>
 
         {/* Product form */}
-        <form className="space-y-10">
+        <form className="space-y-5">
           {/* Product Name input */}
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter product name"
+            value={productForm?.name || ""}
+            name="name"
+            placeholder="enter your product name"
+            onChange={handleChange}
             type="text"
-            className="w-full border border-gray-300 px-4 py-2 "
-            required
+            id="name"
+            className="w-full border border-gray-300 px-4 py-2"
           />
 
           {/* Product Price input */}
           <input
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            type="number"
-            placeholder="Enter product price"
-            className="w-full border border-gray-300 px-4 py-2 "
-            required
+            value={productForm?.price || ""}
+            name="price"
+            placeholder="enter your product price"
+            onChange={handleChange}
+            type="text"
+            id="price"
+            className="w-full border border-gray-300 px-4 py-2"
           />
 
           {/* Product Quantity input */}
           <input
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            placeholder="Enter product quantity"
-            type="number"
-            className="w-full border border-gray-300 px-4 py-2 "
-            required
+            value={productForm?.quantity || ""}
+            name="quantity"
+            placeholder="enter your product quantity"
+            onChange={handleChange}
+            type="text"
+            id="quantity"
+            className="w-full border border-gray-300 px-4 py-2"
           />
 
           {/* Submit button */}
@@ -111,18 +137,27 @@ const Page = () => {
 
         <table className="w-full border border-gray-300">
           <thead>
-            <tr>
+            <tr className=" text-center">
               <th className="border border-gray-300 px-4 py-2">Product Name</th>
               <th className="border border-gray-300 px-4 py-2">Price</th>
               <th className="border border-gray-300 px-4 py-2">Quantity</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border border-gray-300 px-4 py-2">Product Name</td>
-              <td className="border border-gray-300 px-4 py-2">Price</td>
-              <td className="border border-gray-300 px-4 py-2">Quantity</td>
-            </tr>
+            {products &&
+              products.map((product) => (
+                <tr className=" text-center" key={product}>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.price}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.quantity}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
