@@ -6,10 +6,15 @@ const Page = () => {
   const [name, setName] = useState(undefined);
   const [price, setPrice] = useState(undefined);
   const [quantity, setQuantity] = useState(undefined);
-  // const [laoding, setLaoding] = useState(true);
+  const [loading, setLaoding] = useState(false);
 
   const addProduct = async (e) => {
-    e.preventDefault();
+    if (!name || !price || !quantity) {
+      alert("Please fill in all the fields");
+      return;
+    }
+
+    setLaoding(true);
     try {
       const response = await fetch("http://localhost:3000/api/products", {
         method: "POST",
@@ -23,14 +28,17 @@ const Page = () => {
         }),
       });
 
-      if (response.ok) {
-        // setLaoding(false);
+      if (response.ok || response.status === 200) {
+        setName("");
+        setPrice("");
+        setQuantity("");
         alert("Your product was successfully added");
+        setLaoding(false);
       } else {
         alert("Failed to add product. Please try again.");
       }
     } catch (error) {
-      // setLaoding(false);
+      setLaoding(false);
       alert("An unexpected error occurred. Please try again.");
     }
   };
@@ -43,7 +51,6 @@ const Page = () => {
           type="text"
           placeholder="Search products"
           className="w-full border border-gray-300 px-4 py-2 mb-6"
-          // onChange={(e) => handleSearch(e.target.value)}
         />
       </div>
 
@@ -86,12 +93,14 @@ const Page = () => {
 
           {/* Submit button */}
           <button
-            // disabled={laoding}
+            disabled={loading}
             onClick={addProduct}
             type="submit"
-            className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold"
+            className={`bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Add product
+            {loading ? "Adding..." : "Add product"}
           </button>
         </form>
       </div>
