@@ -34,8 +34,8 @@ const Page = () => {
   }, []);
 
   const addProduct = async (e) => {
-    if (!productForm) {
-      alert("Please fill in all the fields");
+    if (!productForm.name || !productForm.price || !productForm.quantity) {
+      alert("Please fill in all the required fields");
       return;
     }
 
@@ -50,7 +50,7 @@ const Page = () => {
       });
 
       if (response.ok || response.status === 200) {
-        setProductForm({});
+        setProductForm();
         alert("Your product was successfully added");
         setLaoding(false);
       } else {
