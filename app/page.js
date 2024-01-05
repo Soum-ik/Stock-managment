@@ -13,7 +13,7 @@ const Page = () => {
       setProducts(data.result);
     };
     fetchProducts();
-  }, []);
+  }, [ ]);
 
   const addProduct = async (e) => {
     if (!productForm.name || !productForm.price || !productForm.quantity) {
@@ -58,7 +58,7 @@ const Page = () => {
           className="w-full border border-gray-300 px-4 py-2 mb-6"
         />
       </div>
-      
+
       {/* Main content container */}
       <div className="container mx-auto my-5 sm:px-15 px-10">
         {/* Add product header */}
