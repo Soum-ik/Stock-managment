@@ -1,5 +1,4 @@
 import { Product } from "@/lib/model/product";
-import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -10,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ result: data, success: true });
   } catch (error) {
     console.log("connection error! data not found", data);
-    return NextResponse.json({ result: data });
+    return NextResponse.json({ result: data, success: true });
   }
 }
 
