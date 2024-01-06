@@ -1,11 +1,15 @@
 "use client";
+import { set } from "mongoose";
 import React, { useState, useEffect } from "react";
 
 const Page = () => {
   const [productForm, setProductForm] = useState({});
   const [loading, setLaoding] = useState(false);
   const [products, setProducts] = useState([]);
+  const [dropDown, setDropDown] = useState([]);
+  const [query, setQuery] = useState("");
 
+  console.log(dropDown, "this is a dropdow");
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch("http://localhost:3000/api/products");
@@ -13,7 +17,7 @@ const Page = () => {
       setProducts(data.result);
     };
     fetchProducts();
-  }, [ ]);
+  }, []);
 
   const addProduct = async (e) => {
     if (!productForm.name || !productForm.price || !productForm.quantity) {
@@ -48,40 +52,67 @@ const Page = () => {
     setProductForm({ ...productForm, [e.target.name]: e.target.value });
   };
 
+  const onDropDown = async (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    setLaoding(false);
+    if (!loading) {
+      setLaoding(true);
+      setDropDown([]);
+      const response = await fetch(
+        "http://localhost:3000/api/search?query=" + query
+      );
+      const resJSON = await response.json();
+
+      setDropDown(resJSON.result);
+    } else {
+      setDropDown([]);
+    }
+  };
+
   return (
     <>
       <div className="container mx-auto my-5 sm:px-15 px-10">
         <h1 className="text-3xl font-semibold mb-6">Search</h1>
         <input
+          name="query"
+          onChange={onDropDown}
           type="text"
           placeholder="Search products"
-          className="w-full border border-gray-300 px-4 py-2 mb-6"
+          className="w-full border border-gray-300 px-4 py-2 "
         />
+
+        <div className="  p-4">
+          {dropDown?.map((result) => (
+            <ul
+              key={result._id}
+              className="  flex justify-between items-center  bg-slate-400/10 space-y-1 p-2"
+            >
+              <li>{result.name}</li>
+              <li>{result.price}</li>
+              <li>{result.quantity}</li>
+            </ul>
+          ))}
+        </div>
       </div>
 
-      {/* Main content container */}
-      <div className="container mx-auto my-5 sm:px-15 px-10">
-        {/* Add product header */}
+      <div className="container mx-auto mt-5 sm:px-15 px-10">
         <h1 className="text-3xl font-semibold mb-6">Add a Product</h1>
 
-        {/* Product form */}
         <form className="space-y-5">
-          {/* Product Name input */}
           <input
             value={productForm?.name || ""}
             name="name"
-            placeholder="enter your product name"
+            placeholder="Enter your product name"
             onChange={handleChange}
             type="text"
             id="name"
             className="w-full border border-gray-300 px-4 py-2"
           />
-
-          {/* Product Price input */}
           <input
             value={productForm?.price || ""}
             name="price"
-            placeholder="enter your product price"
+            placeholder="Enter your product price"
             onChange={handleChange}
             type="text"
             id="price"
@@ -92,7 +123,7 @@ const Page = () => {
           <input
             value={productForm?.quantity || ""}
             name="quantity"
-            placeholder="enter your product quantity"
+            placeholder="Enter your product quantity"
             onChange={handleChange}
             type="text"
             id="quantity"
@@ -113,13 +144,12 @@ const Page = () => {
         </form>
       </div>
 
-      <div className="container mx-auto my-8 sm:px-15 px-10">
-        {/* Display stock header */}
+      <div className="container mx-auto mt-5 sm:px-15 px-10">
         <h1 className="text-3xl font-semibold mb-6">Product Stock</h1>
 
         <table className="w-full border border-gray-300">
           <thead>
-            <tr className=" text-center">
+            <tr className=" text-cEnter">
               <th className="border border-gray-300 px-4 py-2">Product Name</th>
               <th className="border border-gray-300 px-4 py-2">Price</th>
               <th className="border border-gray-300 px-4 py-2">Quantity</th>
@@ -127,7 +157,7 @@ const Page = () => {
           </thead>
           <tbody>
             {products?.map((product) => (
-              <tr className=" text-center" key={product}>
+              <tr className=" text-cEnter" key={product.name}>
                 <td className="border border-gray-300 px-4 py-2">
                   {product.name}
                 </td>
