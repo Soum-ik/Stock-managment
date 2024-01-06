@@ -1,5 +1,4 @@
 "use client";
-import { set } from "mongoose";
 import React, { useState, useEffect } from "react";
 
 const Page = () => {
@@ -63,8 +62,8 @@ const Page = () => {
         "http://localhost:3000/api/search?query=" + query
       );
       const resJSON = await response.json();
-
       setDropDown(resJSON.result);
+      setLaoding(false);
     } else {
       setDropDown([]);
     }
@@ -81,7 +80,7 @@ const Page = () => {
           placeholder="Search products"
           className="w-full border border-gray-300 px-4 py-2 "
         />
-
+        {}
         <div className="  p-4">
           {dropDown?.map((result) => (
             <ul
