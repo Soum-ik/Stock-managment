@@ -1,19 +1,20 @@
 "use client";
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 
 const Page = () => {
   const [productForm, setProductForm] = useState({});
-  const [loading, setLaoding] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [dropDown, setDropDown] = useState([]);
   const [query, setQuery] = useState("");
 
-  console.log(dropDown, "this is a dropdow");
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch("http://localhost:3000/api/products");
       let data = await response.json();
       setProducts(data.result);
+      // setLoading(false);
     };
     fetchProducts();
   }, []);
@@ -24,7 +25,7 @@ const Page = () => {
       return;
     }
 
-    setLaoding(true);
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:3000/api/products", {
         method: "POST",
@@ -37,12 +38,12 @@ const Page = () => {
       if (response.ok || response.status === 200) {
         setProductForm();
         alert("Your product was successfully added");
-        setLaoding(false);
+        setLoading(false);
       } else {
         alert("Failed to add product. Please try again.");
       }
     } catch (error) {
-      setLaoding(false);
+      setLoading(false);
       alert("An unexpected error occurred. Please try again.");
     }
   };
@@ -51,19 +52,18 @@ const Page = () => {
     setProductForm({ ...productForm, [e.target.name]: e.target.value });
   };
 
-  const onDropDown = async (e) => {
-    const value = e.target.value;
+  const onDropdownEdit = async (e) => {
+    let value = e.target.value;
     setQuery(value);
-    setLaoding(false);
-    if (!loading) {
-      setLaoding(true);
+    if (value.length > 3) {
+      setLoading(true);
       setDropDown([]);
       const response = await fetch(
         "http://localhost:3000/api/search?query=" + query
       );
-      const resJSON = await response.json();
-      setDropDown(resJSON.result);
-      setLaoding(false);
+      let rjson = await response.json();
+      setDropDown(rjson.result);
+      setLoading(false);
     } else {
       setDropDown([]);
     }
@@ -75,27 +75,60 @@ const Page = () => {
         <h1 className="text-3xl font-semibold mb-6">Search</h1>
         <input
           name="query"
-          onChange={onDropDown}
+          onChange={onDropdownEdit}
           type="text"
           placeholder="Search products"
           className="w-full border border-gray-300 px-4 py-2 "
         />
-        {}
-        <div className="  p-4">
-          {dropDown?.map((result) => (
+        {loading && (
+          <Image
+            className="   text-center"
+            src="/loading.svg"
+            width={50}
+            height={50}
+            alt="Picture of the author"
+          />
+        )}
+        {dropDown?.map((result) => (
+          <div className="bg-slate-400/10 px-2 py-1 mt-2 rounded-md text-center">
             <ul
               key={result._id}
-              className="  flex justify-between items-center  bg-slate-400/10 space-y-1 p-2"
+              className=" m-2  text-black/50 flex justify-between items-center rounded-md bg-white/70  font-semibold border-b-2 shadow-md px-2 py-2 "
             >
-              <li>{result.name}</li>
-              <li>{result.price}</li>
-              <li>{result.quantity}</li>
+              <li className="bg-white" style={{ whiteSpace: "pre-line" }}>
+                <span style={{ marginRight: "20px" }}>{result.name}</span>
+                <span>
+                  ({result.quantity} available for {result.price})
+                </span>
+              </li>
+
+              <div className=" text-center flex justify-center items-center space-x-4">
+                <button
+                  onClick={() => {
+                    buttonAction("minus", result.name);
+                  }}
+                  disabled={loading}
+                  className=" bg-blue-700 disabled:bg-blue-500  px-3 py-1 rounded-2xl text-white cursor-pointer"
+                >
+                  -
+                </button>
+                <li className=" bg-white text-[19px]">{result.quantity}</li>
+                <button
+                  onClick={() => {
+                    buttonAction("minus", result.name);
+                  }}
+                  disabled={loading}
+                  className=" cursor-pointer bg-blue-700 disabled:bg-blue-500  px-3 py-1 rounded-2xl text-white"
+                >
+                  +
+                </button>
+              </div>
             </ul>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      <div className="container mx-auto mt-5 sm:px-15 px-10">
+      <div className="table-fixed container mx-auto mt-5 sm:px-15 px-10">
         <h1 className="text-3xl font-semibold mb-6">Add a Product</h1>
 
         <form className="space-y-5">
@@ -131,24 +164,22 @@ const Page = () => {
 
           {/* Submit button */}
           <button
-            disabled={loading}
             onClick={addProduct}
             type="submit"
-            className={`bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-blue-900/80 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold  
+              `}
           >
-            {loading ? "Adding..." : "Add product"}
+            {"Add product"}
           </button>
         </form>
       </div>
 
-      <div className="container mx-auto mt-5 sm:px-15 px-10">
+      <div className="container mx-auto mt-5 sm:px-15 px-10 mb-10">
         <h1 className="text-3xl font-semibold mb-6">Product Stock</h1>
 
         <table className="w-full border border-gray-300">
-          <thead>
-            <tr className=" text-cEnter">
+          <thead className=" rounded-md">
+            <tr className=" text-left">
               <th className="border border-gray-300 px-4 py-2">Product Name</th>
               <th className="border border-gray-300 px-4 py-2">Price</th>
               <th className="border border-gray-300 px-4 py-2">Quantity</th>
@@ -156,7 +187,7 @@ const Page = () => {
           </thead>
           <tbody>
             {products?.map((product) => (
-              <tr className=" text-cEnter" key={product.name}>
+              <tr className="text-left" key={product.name}>
                 <td className="border border-gray-300 px-4 py-2">
                   {product.name}
                 </td>
