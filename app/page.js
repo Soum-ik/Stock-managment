@@ -15,7 +15,6 @@ const Page = () => {
       const response = await fetch("http://localhost:3000/api/products");
       let data = await response.json();
       setProducts(data.result);
- 
     };
     fetchProducts();
   }, []);
@@ -73,7 +72,6 @@ const Page = () => {
   };
 
   const buttonAction = async (action, name, initialQuantity) => {
-    setLoadingAction(true);
     const response = await fetch("http://localhost:3000/api/action", {
       method: "POST",
       headers: {
@@ -83,7 +81,6 @@ const Page = () => {
     });
     const resJSON = await response.json();
     console.log(resJSON);
-    setLoadingAction(false);
   };
 
   return (
