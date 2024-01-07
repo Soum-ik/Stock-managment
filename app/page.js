@@ -72,15 +72,35 @@ const Page = () => {
   };
 
   const buttonAction = async (action, name, initialQuantity) => {
-    const response = await fetch("http://localhost:3000/api/action", {
+    let index = products.findIndex((item) => item.name == name);
+    let newProducts = JSON.parse(JSON.stringify(products));
+    if (action == "plus") {
+      newProducts[index].quantity = parseInt(initialQuantity) + 1;
+    } else {
+      newProducts[index].quantity = parseInt(initialQuantity) - 1;
+    }
+    setProducts(newProducts);
+
+    // Immediately change the quantity of the product with given name in Dropdown
+    let indexdrop = dropDown.findIndex((item) => item.name == name);
+    let newDropdown = JSON.parse(JSON.stringify(dropDown));
+    if (action == "plus") {
+      newDropdown[indexdrop].quantity = parseInt(initialQuantity) + 1;
+    } else {
+      newDropdown[indexdrop].quantity = parseInt(initialQuantity) - 1;
+    }
+    setDropDown(newDropdown);
+
+    setLoadingAction(true);
+    const response = await fetch("/api/action", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(initialQuantity, action, name),
+      body: JSON.stringify({ action, name, initialQuantity }),
     });
-    const resJSON = await response.json();
-    console.log(resJSON);
+    let r = await response.json();
+    setLoadingAction(false);
   };
 
   return (
@@ -107,7 +127,10 @@ const Page = () => {
             key={result._id}
             className="bg-slate-400/10 px-2 py-1 mt-2 rounded-md text-center"
           >
-            <ul className=" m-2  text-black/50 flex justify-between items-center rounded-md bg-white/70  font-semibold border-b-2 shadow-md px-2 py-2 ">
+            <ul
+              key={result._id}
+              className=" m-2  text-black/50 flex justify-between items-center rounded-md bg-white/70  font-semibold border-b-2 shadow-md px-2 py-2 "
+            >
               <li className="bg-white" style={{ whiteSpace: "pre-line" }}>
                 <span style={{ marginRight: "20px" }}>{result.name}</span>
                 <span>
@@ -201,7 +224,7 @@ const Page = () => {
           </thead>
           <tbody>
             {products?.map((product) => (
-              <tr className="text-left" key={product.name}>
+              <tr className="text-left" key={product._id}>
                 <td className="border border-gray-300 px-4 py-2">
                   {product.name}
                 </td>

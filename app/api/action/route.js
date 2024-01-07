@@ -1,25 +1,38 @@
-import { Product } from "@/lib/model/product";
+import { MongoClient } from "mongodb";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
   let { action, name, initialQuantity } = await request.json();
 
+  const uri =
+    "mongodb+srv://NexProject:fontendDeveloper@mongoyoutube.nhtraxd.mongodb.net/productDB/products";
+  const client = new MongoClient(uri);
   try {
+    const database = client.db("productDB");
+    const products = database.collection("products");
     const filter = { name: name };
 
     let newQuantity =
-      action == "plue" ? initialQuantity + 1 : initialQuantity - 1;
+      action == "plus"
+        ? parseInt(initialQuantity) + 1
+        : parseInt(initialQuantity) - 1;
     const updateDoc = {
       $set: {
         quantity: newQuantity,
       },
     };
+    const result = await inventory.updateOne(filter, updateDoc, {});
 
-    const result = await Product.updateMany(filter, updateDoc, {});
-
-    console.log(result);
-  } catch (error) {
-    console.log("Updated document not successfuly", error);
-    return NextResponse.json({ result: false });
+    return NextResponse.json({
+      success: true,
+      message: `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`,
+    });
+  } catch {
+    return NextResponse.json({
+      success: false,
+      message: `Some error occurred`,
+    });
+  } finally {
+    await client.close();
   }
 }
