@@ -8,25 +8,28 @@ const Page = () => {
   const [loadingAction, setLoadingAction] = useState(false);
   const [products, setProducts] = useState([]);
   const [dropDown, setDropDown] = useState([]);
+  const [btnSubmit, setBtnSubmit] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch("http://localhost:3000/api/products");
       let data = await response.json();
       setProducts(data.result);
-      // setLoading(false);
+ 
     };
     fetchProducts();
   }, []);
 
   const addProduct = async (e) => {
+    e.preventDefault();
+
     if (!productForm.name || !productForm.price || !productForm.quantity) {
       alert("Please fill in all the required fields");
       return;
     }
 
-    setLoading(true);
     try {
+      setBtnSubmit(true);
       const response = await fetch("http://localhost:3000/api/products", {
         method: "POST",
         headers: {
@@ -38,12 +41,12 @@ const Page = () => {
       if (response.ok || response.status === 200) {
         setProductForm();
         alert("Your product was successfully added");
-        setLoading(false);
+        setBtnSubmit(false);
       } else {
         alert("Failed to add product. Please try again.");
+        setBtnSubmit(false);
       }
     } catch (error) {
-      setLoading(false);
       alert("An unexpected error occurred. Please try again.");
     }
   };
@@ -78,7 +81,8 @@ const Page = () => {
       },
       body: JSON.stringify(initialQuantity, action, name),
     });
-     
+    const resJSON = await response.json();
+    console.log(resJSON);
     setLoadingAction(false);
   };
 
@@ -177,6 +181,7 @@ const Page = () => {
           {/* Submit button */}
           <button
             onClick={addProduct}
+            disabled={btnSubmit}
             type="submit"
             className={`bg-blue-900/80 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold  
               `}

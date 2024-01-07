@@ -1,7 +1,7 @@
 import { Product } from "@/lib/model/product";
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
+export async function PATCH(request) {
   let { action, name, initialQuantity } = await request.json();
 
   try {
