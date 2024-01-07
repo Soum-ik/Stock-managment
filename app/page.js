@@ -17,7 +17,7 @@ const Page = () => {
       setProducts(data.result);
     };
     fetchProducts();
-  }, []);
+  }, [products]);
 
   const addProduct = async (e) => {
     e.preventDefault();

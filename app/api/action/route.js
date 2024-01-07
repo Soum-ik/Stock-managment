@@ -21,7 +21,7 @@ export async function POST(request) {
         quantity: newQuantity,
       },
     };
-    const result = await inventory.updateOne(filter, updateDoc, {});
+    const result = await products.updateOne(filter, updateDoc, {});
 
     return NextResponse.json({
       success: true,
