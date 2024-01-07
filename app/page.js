@@ -5,9 +5,9 @@ import React, { useState, useEffect } from "react";
 const Page = () => {
   const [productForm, setProductForm] = useState({});
   const [loading, setLoading] = useState(false);
+  const [loadingAction, setLoadingAction] = useState(false);
   const [products, setProducts] = useState([]);
   const [dropDown, setDropDown] = useState([]);
-  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -54,12 +54,12 @@ const Page = () => {
 
   const onDropdownEdit = async (e) => {
     let value = e.target.value;
-    setQuery(value);
+
     if (value.length > 3) {
       setLoading(true);
       setDropDown([]);
       const response = await fetch(
-        "http://localhost:3000/api/search?query=" + query
+        `http://localhost:3000/api/search?query=${value}`
       );
       let rjson = await response.json();
       setDropDown(rjson.result);
@@ -69,12 +69,24 @@ const Page = () => {
     }
   };
 
+  const buttonAction = async (action, name, initialQuantity) => {
+    setLoadingAction(true);
+    const response = await fetch("http://localhost:3000/api/action", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(initialQuantity, action, name),
+    });
+     
+    setLoadingAction(false);
+  };
+
   return (
     <>
       <div className="container mx-auto my-5 sm:px-15 px-10">
         <h1 className="text-3xl font-semibold mb-6">Search</h1>
         <input
-          name="query"
           onChange={onDropdownEdit}
           type="text"
           placeholder="Search products"
@@ -90,11 +102,11 @@ const Page = () => {
           />
         )}
         {dropDown?.map((result) => (
-          <div className="bg-slate-400/10 px-2 py-1 mt-2 rounded-md text-center">
-            <ul
-              key={result._id}
-              className=" m-2  text-black/50 flex justify-between items-center rounded-md bg-white/70  font-semibold border-b-2 shadow-md px-2 py-2 "
-            >
+          <div
+            key={result._id}
+            className="bg-slate-400/10 px-2 py-1 mt-2 rounded-md text-center"
+          >
+            <ul className=" m-2  text-black/50 flex justify-between items-center rounded-md bg-white/70  font-semibold border-b-2 shadow-md px-2 py-2 ">
               <li className="bg-white" style={{ whiteSpace: "pre-line" }}>
                 <span style={{ marginRight: "20px" }}>{result.name}</span>
                 <span>
@@ -104,21 +116,21 @@ const Page = () => {
 
               <div className=" text-center flex justify-center items-center space-x-4">
                 <button
-                  onClick={() => {
-                    buttonAction("minus", result.name);
-                  }}
-                  disabled={loading}
-                  className=" bg-blue-700 disabled:bg-blue-500  px-3 py-1 rounded-2xl text-white cursor-pointer"
+                  onClick={() =>
+                    buttonAction("minus", result.name, result.quantity)
+                  }
+                  disabled={loadingAction}
+                  className=" bg-blue-700 disabled:bg-blue-400  px-3 py-1 rounded-2xl text-white cursor-pointer"
                 >
                   -
                 </button>
                 <li className=" bg-white text-[19px]">{result.quantity}</li>
                 <button
-                  onClick={() => {
-                    buttonAction("minus", result.name);
-                  }}
-                  disabled={loading}
-                  className=" cursor-pointer bg-blue-700 disabled:bg-blue-500  px-3 py-1 rounded-2xl text-white"
+                  onClick={() =>
+                    buttonAction("plus", result.name, result.quantity)
+                  }
+                  disabled={loadingAction}
+                  className=" cursor-pointer bg-blue-700 disabled:bg-blue-400  px-3 py-1 rounded-2xl text-white"
                 >
                   +
                 </button>

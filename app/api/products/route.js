@@ -8,7 +8,7 @@ export async function GET() {
     console.log("SuccessFully connected", data);
     return NextResponse.json({ result: data, success: true });
   } catch (error) {
-    console.log("connection error! data not found", data);
+    console.log("connection error! data not found product", data);
     return NextResponse.json({ result: data, success: true });
   }
 }
